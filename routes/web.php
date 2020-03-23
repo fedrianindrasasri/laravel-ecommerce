@@ -16,3 +16,17 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Auth::routes();
+
+/*
+    jadi ini grouping route, sehingga route didalamnya diawali dengan /administrator
+    cth: ./administrator/category atau /administrator/product, dsb
+*/
+Route::group(['prefix' => 'administrator', 'middleware' => 'auth'], function(){
+    // route /home kita masukkan kedalam grouping administrator
+    Route::get('/home', 'HomeController@index')->name('home');
+
+    // route baru dengan keyword resource agar semua route dibuat kecuali create dan show
+    Route::resource('category', 'CategoryController')->except(['create', 'show']);
+});
