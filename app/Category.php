@@ -28,7 +28,7 @@ class Category extends Model
         return $query->whereNull('parent_id');
     }
 
-    // mutator => bekerja memodifikasi dara sebelum data tersebut disimpan kedalam database
+    // mutator => bekerja memodifikasi data sebelum data tersebut disimpan kedalam database
     public function setSlugeAttribute($value)
     {
         $this->attribute['slug'] = Str::slug($value);
@@ -43,5 +43,10 @@ class Category extends Model
     public function child()
     {
         return $this->hasMany(Category::class, 'parent_id');
+    }
+
+    public function product()
+    {
+        return $this->hasMany(Product::class);
     }
 }

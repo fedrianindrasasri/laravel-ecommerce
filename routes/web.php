@@ -29,4 +29,6 @@ Route::group(['prefix' => 'administrator', 'middleware' => 'auth'], function(){
 
     // route baru dengan keyword resource agar semua route dibuat kecuali create dan show
     Route::resource('category', 'CategoryController')->except(['create', 'show']);
+
+    Route::resource('product', 'ProductController');
 });
