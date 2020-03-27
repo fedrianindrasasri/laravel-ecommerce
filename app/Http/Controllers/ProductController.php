@@ -7,6 +7,7 @@ use App\Product;
 use App\Category;
 use Illuminate\Support\Str;
 use File;
+use App\Jobs\ProductJob;
 
 class ProductController extends Controller
 {
@@ -45,12 +46,12 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-        'name' => 'required|string|max:100',
-        'description' => 'required',
-        'category_id' => 'required|exists:categories,id', //CATEGORY_ID KITA CEK HARUS ADA DI TABLE CATEGORIES DENGAN FIELD ID
-        'price' => 'required|integer',
-        'weight' => 'required|integer',
-        'image' => 'required|image|mimes:png,jpeg,jpg' //GAMBAR DIVALIDASI HARUS BERTIPE PNG,JPG DAN JPEG
+            'name' => 'required|string|max:100',
+            'description' => 'required',
+            'category_id' => 'required|exists:categories,id', //CATEGORY_ID KITA CEK HARUS ADA DI TABLE CATEGORIES DENGAN FIELD ID
+            'price' => 'required|integer',
+            'weight' => 'required|integer',
+            'image' => 'required|image|mimes:png,jpeg,jpg' //GAMBAR DIVALIDASI HARUS BERTIPE PNG,JPG DAN JPEG
         ]);
 
         // jika ada file image
@@ -93,4 +94,77 @@ class ProductController extends Controller
     }
 
 
+    public function massUploadForm()
+    {
+        $category = Category::orderBy('name', 'DESC')->get();
+        return view('products.bulk', compact('category'));
+    }
+
+    public function massUpload(Request $request)
+    {
+        $this->validate($request, [
+            'category_id' => 'required|exists:categories,id',
+            'file' => 'required|mimes:xlsx'
+        ]);
+
+        // jika filenya ada
+        if ($request->hasFile('file'))
+        {
+            $file = $request->file('file');
+            $filename = time() . '-product.' . $file->getClientOriginalExtension();
+            $file->storeAs('public/uploads', $filename);
+
+            /*
+                buat jadwal untuk memproses file tersebut menggunakan Job
+                adapun pada distpach kita mngirimkan dua informasi
+                yakni category_id dan nama file yang akan disimpan
+            */
+            ProductJob::dispatch($request->category_id, $filename);
+            return redirect()->back()->with(['success' => 'Upload Produk Dijadwalkan']);
+        }
+    }
+
+    public function edit($id)
+    {
+        $product = Product::find($id);
+        $category = Category::orderBy('name', 'DESC')->get();
+        return view('products.edit', compact('product', 'category'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        // validasi data yang dikirimkan
+        $this->validate($request, [
+            'name' => 'required|string|max:100',
+            'description' => 'required',
+            'category_id' => 'required|exists:categories,id',
+            'price' => 'required|integer',
+            'weight' => 'required|integer',
+            'image' => 'nullable|image|mimes:png,jpeg,jpg'
+        ]);
+
+        $product = Product::find($id);
+        $filename = $product->image;
+
+        if ($request->hasFile('image'))
+        {
+            $file = $request->file('image');
+            $filename = time().Str::slug($request->name).'.'.$file->getClientOriginalExtension();
+
+            $file->storeAs('public/products', $filename);
+            // hapus file gambar yang lama
+            File::delete(storage_path('app/public/products/'/$product->image));
+        }
+
+        $product->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'category_id' => $request->category_id,
+            'price' => $request->price,
+            'weight' => $request->weight,
+            'image' => $filename
+        ]);
+
+        return redirect(route('product.index'))->with(['success' => 'Data Produk Diperbaharui']);
+    }
 }
