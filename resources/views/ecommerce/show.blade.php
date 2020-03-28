@@ -59,25 +59,35 @@
                         <li>
                             <ul>
                                 <p></p>
-                                <div class="product_count">
-                                    <label for="qty">Quantity:</label>
-                                    <input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:"
-                                        class="input-text qty">
-                                    <button
-                                        onclick="var result = document.getElementById('sst'); var sst = result.value; if(!isNaN(sst)) result.value++;return false;"
-                                        class="increase items-count" type="button">
-                                        <i class="lnr lnr-chevron-up"></i>
-                                    </button>
 
-                                    <button
-                                        onclick="var result = document.getElementById('sst'); var sst = result.value; if(!isNaN(sst) &amp;&amp; sst>0) result.value--; return false;"
-                                        class="reduced items-count" type="button">
-                                        <i class="lnr lnr-chevron-down"></i>
-                                    </button>
-                                </div>
-                                <div class="card_area">
-                                    <a href="#" class="main_btn">Add to Cart</a>
-                                </div>
+                                <form action="{{ route('front.cart') }}" method="post">
+                                    @csrf
+                                    <div class="product_count">
+                                        <label for="qty">Quantity:</label>
+                                        <input type="text" name="qty" id="sst" maxlength="12" value="1"
+                                            title="Quantity:" class="input-text qty">
+
+                                        <!--Inputan Hidden yang berisi id Produk-->
+                                        <input type="hidden" name="product_id" value="{{ $product->id }}"
+                                            class="form-control">
+                                        <button
+                                            onclick="var result = document.getElementById('sst'); var sst = result.value; if(!isNaN(sst)) result.value++;return false;"
+                                            class="increase items-count" type="button">
+                                            <i class="lnr lnr-chevron-up"></i>
+                                        </button>
+
+                                        <button
+                                            onclick="var result = document.getElementById('sst'); var sst = result.value; if(!isNaN(sst) &amp;&amp; sst>0) result.value--; return false;"
+                                            class="reduced items-count" type="button">
+                                            <i class="lnr lnr-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                    <div class="card_area">
+                                        <button class="main_btn">Add to Cart</button>
+                                    </div>
+                                </form>
+
+
                             </ul>
                         </li>
                     </ul>

@@ -81,7 +81,7 @@
                                     </li>
                                     <hr>
                                     <li class="nav-item">
-                                        <a href="#" class="icons">
+                                        <a href="{{ route('front.list_cart') }}" class="icons">
                                             <i class="lnr lnr lnr-cart" aria-hidden="true"></i>
                                         </a>
                                     </li>
@@ -241,6 +241,8 @@
     <script src="{{ asset('ecommerce/vendors/counter-up/jquery.counterup.js') }}"></script>
     <script src="{{ asset('ecommerce/js/mail-script.js') }}"></script>
     <script src="{{ asset('ecommerce/js/theme.js') }}"></script>
+
+    @yield('js')
 </body>
 
 </html>
