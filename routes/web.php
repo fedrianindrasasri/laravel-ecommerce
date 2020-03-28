@@ -13,11 +13,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'Ecommerce\FrontController@index')->name('front.index');
+Route::get('/product', 'Ecommerce\FrontController@product')->name('front.product');
+Route::get('/category/{slug}', 'Ecommerce\FrontController@categoryProduct')->name('front.category');
+Route::get('/product/{slug}', 'Ecommerce\FrontController@show')->name('front.show_product');
+
+
+
 
 Auth::routes();
+
+
+
 
 /*
     jadi ini grouping route, sehingga route didalamnya diawali dengan /administrator
